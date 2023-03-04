@@ -1,5 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:loguin_cadastro/teste.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import 'model/user_model.dart';
@@ -12,6 +14,7 @@ class Cadastro extends StatefulWidget {
 }
 
 class _CadastroState extends State<Cadastro> {
+  bool _toggleVisibility = true;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
@@ -32,114 +35,174 @@ class _CadastroState extends State<Cadastro> {
     return ScopedModelDescendant<UserModel>(
       builder: (context, child, model) => Scaffold(
         appBar: AppBar(
-          title: const Text('Faça seu registro'),
-          backgroundColor: const Color.fromARGB(255, 22, 182, 57),
+          title: Text('Registro'),
+          backgroundColor: const Color(0xFF3CB371), // cor verde pastel
         ),
         backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(8),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
           child: Form(
             key: _formKey,
-            child: Column(children: [
-              const SizedBox(height: 13),
-              TextFormField(
-                controller: nomeController,
-                autofocus: true,
-                style: const TextStyle(color: Colors.black),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                  ),
-                  hintText: 'Digite seu nome',
-                  labelStyle: TextStyle(color: Colors.black),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, digite seu nome';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 13),
-              TextFormField(
-                controller: emailController,
-                autofocus: true,
-                keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(color: Colors.black),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                  ),
-                  hintText: 'Digite seu email',
-                  labelStyle: TextStyle(color: Colors.black),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, digite seu email';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Por favor, digite um email válido';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 13),
-              TextFormField(
-                controller: senhaController,
-                autofocus: true,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                  ),
-                  hintText: 'Digite sua senha',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, digite sua senha';
-                  }
-                  if (value.length < 6) {
-                    return 'A senha deve ter no mínimo 6 caracteres';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 13),
-              TextFormField(
-                  controller: contatoController,
-                  autofocus: true,
-                  keyboardType: TextInputType.phone,
-                  style: const TextStyle(color: Colors.black),
-                  decoration: const InputDecoration(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: nomeController,
+                  decoration: InputDecoration(
+                    labelText: 'Nome',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    hintText: 'Digite seu contato',
-                    labelStyle: TextStyle(color: Colors.black),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, digite seu contato';
-                    }
-                    return null;
-                  }),
-              const SizedBox(height: 13),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/login');
-                },
-                child: const Text('Já possui uma conta? Faça login'),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.green[300],
-                  textStyle: const TextStyle(fontSize: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                  style: TextStyle(
+                    color: Colors.grey[800],
+                    fontSize: 16,
+                  ),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Digite seu nome' : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: TextStyle(
+                    color: Colors.grey[800],
+                    fontSize: 16,
+                  ),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Digite seu email' : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: senhaController,
+                  obscureText: _toggleVisibility,
+                  decoration: InputDecoration(
+                      labelText: 'Senha',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _toggleVisibility = !_toggleVisibility;
+                          });
+                        },
+                        icon: _toggleVisibility
+                            ? const Icon(
+                                Icons.visibility_off,
+                                color: Colors.grey,
+                              )
+                            : const Icon(
+                                Icons.visibility,
+                                color: Colors.grey,
+                              ),
+                      )),
+                  style: TextStyle(
+                    color: Colors.grey[800],
+                    fontSize: 16,
+                  ),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Digite sua senha' : null,
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: contatoController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: 'Contato',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: TextStyle(
+                    color: Colors.grey[800],
+                    fontSize: 16,
+                  ),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Digite seu contato' : null,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, '/login'),
+                  child: Text(
+                    'Já possui uma conta? Faça login',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: const Color(0xFF3CB371), // cor verde pastel
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.all(0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      side: BorderSide(
+                        color: const Color(0xFF3CB371), // cor verde pastel
+                        width: 2,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ]),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      model.cadastroUser(
+                        nome: nomeController.text,
+                        email: emailController.text,
+                        senha: senhaController.text,
+                        contato: contatoController.text,
+                        onSuccess: _onSuccess,
+                        onFail: _onFail,
+                      );
+                    }
+                  },
+                  child: Text(
+                    'Cadastrar',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: const Color(0xFF3CB371), // cor verde pastel
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 50,
+                      vertical: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _onSuccess() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const Teste()),
+    );
+  }
+
+  void _onFail() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Falha no registro!'),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 2),
       ),
     );
   }

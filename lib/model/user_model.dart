@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html';
 import 'package:http/http.dart' as http;
 import 'package:scoped_model/scoped_model.dart';
 
@@ -28,38 +29,40 @@ class UserModel extends Model {
     });
   }
 
-  cadastroUser(
-      {required String nome,
-      required String email,
-      required String senha,
-      required String contato}) async {
-    var data = {
-      'username': nome,
-      'email': email,
-      'contato': contato,
-      'password': senha
-    };
-    await http
-        .post(
-      Uri.parse(
-          'https://adocao-production.up.railway.app/api/auth/local/register'),
+  cadastroUser({
+    required String nome,
+    required String email,
+    required String senha,
+    required String contato,
+    required void Function() onSuccess,
+    required void Function() onFail,
+  }) async {
+    final Url = Uri.parse(
+        'https://adocao-production.up.railway.app/api/auth/local/register');
+
+    final response = await http.post(
+      Url,
       headers: <String, String>{
         'content-type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(data),
-    )
-        .then((Response) async {
-      if (Response.statusCode == 200) {
-        userLogado = jsonDecode(Response.body);
+      body: jsonEncode(<String, String>{
+        'email': email,
+        'password': senha,
+        'contato': contato,
+        'username': nome
+      }),
+    );
 
-        notifyListeners();
-      } else if (Response.statusCode == 400) {
-        notifyListeners();
-      }
-    });
+    if (response.statusCode == 200) {
+      // Sucesso no cadastro
+      onSuccess();
+    } else {
+      // Falha no cadastro
+      onFail();
+    }
   }
 
-  void signIn({
+  signIn({
     required String email,
     required String pass,
     required void Function() onSuccess,

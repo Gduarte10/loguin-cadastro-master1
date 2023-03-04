@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:loguin_cadastro/cadastro.dart';
 import 'package:loguin_cadastro/login.dart';
 import 'package:loguin_cadastro/model/user_model.dart';
+import 'package:loguin_cadastro/teste.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 void main() {
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
           routes: {
             '/': (context) => const Cadastro(),
             '/login': (context) => const Login(),
+            '/teste': (context) => const Teste(),
           },
         ));
   }
